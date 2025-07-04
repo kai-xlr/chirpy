@@ -20,3 +20,7 @@ func (cfg *apiConfig) handlerValidate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (cfg *apiConfig) handlerEncoding(w http.ResponseWriter, r *http.Request) {
+	
+}
