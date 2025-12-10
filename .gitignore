@@ -3,3 +3,24 @@ out
 
 # Warp AI agent instructions
 WARP.md
+
+# Go test coverage
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace file
+go.work
+go.work.sum
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.local

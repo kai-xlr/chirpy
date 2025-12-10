@@ -1,14 +1,15 @@
 # chirpy
 
-A simple HTTP server written in Go that serves static files with request tracking and monitoring capabilities.
+A simple HTTP server written in Go that serves static files with request tracking, health monitoring, and chirp validation.
 
 ## Features
 
 - **Static file server**: Serves files from the root directory at `/app/*` endpoint
 - **Request tracking**: Automatically counts all file server requests using thread-safe atomic operations
-- **Metrics endpoint**: View the total number of requests to the file server
-- **Reset functionality**: Reset the request counter back to zero
-- **Health check endpoint**: `/healthz` endpoint returns HTTP 200 OK status
+- **Metrics dashboard**: HTML dashboard displaying total file server visits
+- **Chirp validation**: Validates chirp messages (max 140 characters)
+- **Health check endpoint**: `/api/healthz` endpoint returns HTTP 200 OK status
+- **Admin reset**: Reset the request counter back to zero
 - **Lightweight**: Built using only Go's standard library
 
 ## Getting Started
@@ -20,7 +21,7 @@ A simple HTTP server written in Go that serves static files with request trackin
 ### Building
 
 ```bash
-go build -o out ./cmd/chirpy
+go build -o out
 ```
 
 ### Running
@@ -34,7 +35,7 @@ The server will start on port 8080.
 Alternatively, build and run in one command:
 
 ```bash
-go run ./cmd/chirpy
+go run main.go
 ```
 
 ## API Endpoints
@@ -51,14 +52,21 @@ go run ./cmd/chirpy
 - **Description**: Returns server status
 - **Response**: `200 OK` with plain text "OK"
 
-### Metrics
-- **Path**: `/api/metrics`
-- **Method**: GET
-- **Description**: Returns the total number of requests made to the file server
-- **Response**: `200 OK` with plain text showing hit count (e.g., "Hits: 42")
+### Validate Chirp
+- **Path**: `/api/validate_chirp`
+- **Method**: POST
+- **Description**: Validates a chirp message (must be 140 characters or less)
+- **Request Body**: `{"body": "Your chirp message here"}`
+- **Response**: `200 OK` with JSON `{"valid": true}` or `400 Bad Request` with error message
 
-### Reset Metrics
-- **Path**: `/api/reset`
+### Admin Metrics
+- **Path**: `/admin/metrics`
+- **Method**: GET
+- **Description**: Returns an HTML page displaying the total number of file server visits
+- **Response**: `200 OK` with HTML dashboard
+
+### Admin Reset
+- **Path**: `/admin/reset`
 - **Method**: POST
 - **Description**: Resets the file server request counter to zero
 - **Response**: `200 OK` with plain text "Hits reset to 0"
@@ -67,27 +75,18 @@ go run ./cmd/chirpy
 
 ```
 .
-├── cmd/
-│   └── chirpy/
-│       └── main.go              # Application entry point
-├── internal/
-│   ├── handlers/
-│   │   ├── readiness.go         # Health check handler
-│   │   └── reset.go             # Reset handler and APIConfig type
-│   └── middleware/
-│       └── metrics.go           # Metrics middleware and handler
-├── assets/                      # Static assets directory
-│   └── logo.png                 # Project logo
+├── main.go                      # Application entry point and server setup
+├── handler_validate.go          # Chirp validation handler
+├── json.go                      # JSON response utilities
+├── metrics.go                   # Metrics middleware and handler
+├── readiness.go                 # Health check handler
+├── reset.go                     # Reset handler
 ├── index.html                   # Sample HTML page
 ├── go.mod                       # Go module definition
 └── README.md                    # This file
 ```
 
-This project follows the [Standard Go Project Layout](https://github.com/golang-standards/project-layout):
-- `cmd/chirpy/` - Main application entry point
-- `internal/` - Private application code (not importable by external projects)
-- `internal/handlers/` - HTTP request handlers
-- `internal/middleware/` - HTTP middleware functions
+The project currently uses a single-package structure with all code in the `main` package. As the application grows, consider refactoring into a more structured layout with `cmd/` and `internal/` directories
 
 ## Development
 
